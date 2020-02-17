@@ -909,6 +909,17 @@ function responseCallbackPartial(response) {
       evt.currentTarget.className += " active";
 
       if(tab_name == "clock") {
+		  
+		  
+		  var lunch = lunchTime();
+
+		  if(lunch != 0) {//If correct lunch time can be isolated..
+		  document.getElementById("lunch_range").value = lunch - 1;
+
+		  }
+		  
+		  
+		  
           document.getElementById("small_clock").style.display = "none";
           document.getElementById("small_clock_period").style.display = "none";
       } else {

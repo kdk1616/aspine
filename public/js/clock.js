@@ -29,6 +29,9 @@ xhttp.onreadystatechange = function() {
 xhttp.open("GET", "schedule.json");
 xhttp.send();
 
+
+
+
 function drawHand(ctx, radius, pos, length, width) {
     ctx.strokeStyle = 'white';
     ctx.beginPath();
@@ -177,12 +180,7 @@ function school_day() {
 
 function redraw_clock() {
 
-	var lunch = lunchTime();
 	
-	if(lunch != 0) {//If correct lunch time can be isolated..
-	document.getElementById("lunch_range").value = lunch - 1;
-	
-	}
     // Fake call to get_period_name to set current_schedule
     get_period_name("Period 1");
     // UTC to EST
@@ -255,38 +253,6 @@ function redraw_clock() {
 }
 
 
-
-
-function lunchTime() {
-		  var per3 = tableData.schedule.black[3];//right now only decides lunch based on black day...
-		  var floor = per3.room[0];
-		  var zone = per3.room[1];
-		  console.log("zone: " + zone + " floor: " + floor);
-		  let lunch = 0;
-		  
-		  
-	//-------LOGIC TO DECIDE LUNCH (THIS WILL NEED TO BE UPDATED)---------------	  
-		if ((zone < 6 && floor < 3) &&  (!per3.name.includes("Bio") && !per3.name.includes("Chem") && !per3.name.includes("Physics") && !per3.name.includes("Science"))) {
-			lunch = 1;
-			updateClockLunch("regular-a");//Update Clock;
-		}
-		if((zone < 6 && floor > 3) || zone == 6) {
-			lunch = 2;
-			updateClockLunch("regular-b");//Update Clock;
-			
-		}
-		if (zone < 6 && floor == 3 || per3.name.includes("Bio") || per3.name.includes("Chem") || per3.name.includes("Physics") || per3.name.includes("Science") || per3.name.includes("PE")) {//(Rindge 3rd floor, VPA in Arts Building (NOT ACCOUNTED FOR), Science, War Memorial == C
-			lunch = 3;
-			updateClockLunch("regular-c");//Update Clock;
-			
-		}
-		else {
-			lunch = 0;
-		}
-//---------END LUNCH LOGIC----------
-	
-		return lunch;
-	}
 
 
 
