@@ -238,6 +238,32 @@ let termsReset = {};
               {title:"Score", field:"score", editor:"number", editorParams:{min:0, max:100, step:1,}, formatter: rowFormatter, headerSort:false,},
               {title:"Max Score", field:"max_score", editor:"number", editorParams:{min:0, max:100, step:1,}, formatter: rowFormatter, headerSort:false,},
               {title:"Percentage", field: "percentage", formatter: rowGradeFormatter, headerSort:false,},
+			   {title: "Correctons", titleFormatter: statInfoHeaderFormatter, formatter: statInfoFormatter, width:40, align:"center", cellClick: async function(e, cell){
+				   
+				   
+				   var per = prompt("What percent corrections do can you expect on this assignment?");
+				   if(per > 0 && per <= 100) {
+				   var score = cell._cell.row.data.score;
+				   console.log(cell._cell.row);
+				   var maxScore = cell._cell.row.data.max_score;
+				   
+				   var diff = maxScore-score;
+				   var ptsBack = diff * per/100;
+				   var newScore = score + ptsBack;
+				   cell._cell.row.data.score.innerHTML = newScore;
+				   let rowPos = assignmentsTable.getRowPosition(cell._cell.row, true);
+				   var row = assignmentsTable.getRowFromPosition(rowPos, true); //return 6th row in the visible table data
+				   row.update({"score":newScore}); //update the row data for field "name"
+				 //  table.updateRow(table.getRowPosition(cell._cell.row, true)); 
+				 assignmentsTable.redraw();
+				 categoriesTable.redraw();
+				 classesTable.redraw();
+				 
+			   	  }
+				   
+				   return;
+				   
+			   }},
               {title: "Stats", titleFormatter: statInfoHeaderFormatter, formatter: statInfoFormatter, width:40, align:"center", cellClick: async function(e, cell){
 
               if (!isNaN(cell.getRow().getData().score)) {
@@ -450,7 +476,7 @@ let termsReset = {};
               }, headerSort:false,},
               {title: "Add", titleFormatter:addAssignmentFormatter, headerClick: newAssignment, formatter:"buttonCross", width:40, align:"center", cellClick:function(e, cell){
                   cell.getRow().delete();
-              }, headerSort:false,},
+              }, headerSort:false,},			  
           ],
       });
       //create Tabulator on DOM element with id "scheduleTable"
@@ -722,8 +748,63 @@ function responseCallbackPartial(response) {
           //the following lines are used to set up the schedule table correctly
           //let periods = ["Period 1",  "CM/OTI", "Period 2", "Period 3", "Period 4"];
           let periods = tableData.schedule.black.slice().map(x => x.aspenPeriod.substring(x.aspenPeriod.indexOf("-") + 1));
-          let placeTimes = ["8:05 - 9:25", "9:29 - 9:44", "9:48 - 11:08", "11:12 - 1:06", "1:10 - 2:30"];
-          let timesCounter = 0;
+		  
+		  var per3 = tableData.schedule.black[3];//right now only decides lunch based on black day...
+		  var floor = per3.room[0];
+		  var zone = per3.room[1];
+		  console.log("zone: " + zone + " floor: " + floor);
+		  let lunch = 0;
+		  
+		  
+	//-------LOGIC TO DECIDE LUNCH (THIS WILL NEED TO BE UPDATED)---------------	  
+		if ((zone < 6 && floor < 3) &&  (!per3.name.includes("Bio") && !per3.name.includes("Chem") && !per3.name.includes("Physics") && !per3.name.includes("Science"))) {
+			lunch = 1;
+		}
+		if((zone < 6 && floor > 3) || zone == 6) {
+			lunch = 2;
+		}
+		if (zone < 6 && floor == 3 || per3.name.includes("Bio") || per3.name.includes("Chem") || per3.name.includes("Physics") || per3.name.includes("Science") || per3.name.includes("PE")) {//(Rindge 3rd floor, VPA in Arts Building (NOT ACCOUNTED FOR), Science, War Memorial == C
+			lunch = 3;
+		}
+		else {
+			lunch = 0;
+		}
+//---------END LUNCH LOGIC----------
+		  
+		  
+		  if (lunch == 1) {//Lunch A
+			  periods.splice(3,0,"Lunch");
+			  tableData.schedule.black.splice(3,0,{id: "",name: "Lunch A",teacher: "",room:"",aspenPeriod: ""});
+			  tableData.schedule.silver.splice(3,0,{id: "",name: "Lunch A",teacher: "",room:"",aspenPeriod: ""});
+			  
+			  let placeTimes = ["8:05 - 9:25", "9:29 - 9:44", "9:48 - 11:08", "11:12 - 11:42","11:46-1:06", "1:10 - 2:30"];
+	  	   }
+ 		  if (lunch == 2) {
+		
+			  periods.splice(4,0,"Lunch");
+			  tableData.schedule.black.splice(4,0,{id: "",name: "Lunch B",teacher: "",room:"",aspenPeriod: ""});
+			  periods.splice(5,0,tableData.schedule.black[3].name);
+			  tableData.schedule.black.splice(5,0,tableData.schedule.black[3]);
+			  
+			  tableData.schedule.silver.splice(4,0,{id: "",name: "Lunch B",teacher: "",room:"",aspenPeriod: ""});
+			  tableData.schedule.silver.splice(5,0,tableData.schedule.black[3]);
+ 		  	  let placeTimes = ["8:05 - 9:25", "9:29 - 9:44", "9:48 - 11:08", "11:12 - 11:52","11:54-12:24","12:26-1:06", "1:10 - 2:30"];
+		  
+ 	  	   }
+ 		  if (lunch == 3) {
+			  periods.splice(4,0,"Lunch");
+			  tableData.schedule.black.splice(4,0,{id: "",name: "Lunch C",teacher: "",room:"",aspenPeriod: ""});
+			  tableData.schedule.silver.splice(4,0,{id: "",name: "Lunch C",teacher: "",room:"",aspenPeriod: ""});
+			  
+	 		  let placeTimes = ["8:05 - 9:25", "9:29 - 9:44", "9:48 - 11:08", "11:12 - 12:32","12:36-1:06", "1:10 - 2:30"];
+			  
+ 	  	   }
+		   
+		   if(lunch == 0) {
+		   	let placeTimes = ["8:05 - 9:25", "9:29 - 9:44", "9:48 - 11:08", "11:12-1:06", "1:10 - 2:30"];
+		   }
+		 
+		  let timesCounter = 0;
           let times = []
 
           
@@ -734,6 +815,7 @@ function responseCallbackPartial(response) {
                   timesCounter++;
               } else {
                   times[i] = "";
+				  
               }
 
           }
@@ -742,9 +824,12 @@ function responseCallbackPartial(response) {
 
 
           let colors = ["#63C082", "#72C68E", "#82CC9B", "#91D2A7", "#A1D9B4", "#B1DFC0", "#C0E5CD", "#D0ECD9"];
-  
+		  
   for (let i = 0; i < periods.length;  i++) {
+	//  console.log(periods.length);
+	 // console.log(periods[i]);
      
+	 
                   if (tableData.schedule.black[i]) {
                       tableData.schedule.black[i].period = periods[i] ? periods[i] + "<br>" + times[i] : "Extra";
                       tableData.schedule.black[i].class = tableData.schedule.black[i].name + "<br>" + tableData.schedule.black[i].teacher;
