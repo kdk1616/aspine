@@ -222,6 +222,7 @@ let termsReset = {};
           //	row.getElement().style.backgroundColor = row.getData().color;
           //},
           dataEdited: editAssignment,
+          // dataLoaded: editAssignment,
           columns:[ //Define Table Columns
               {title:"Assignment", field:"name", editor:"input", formatter: rowFormatter, headerSort:false},
               {title:"Category", field:"category", editor:"select",
@@ -239,7 +240,9 @@ let termsReset = {};
               {title:"Max Score", field:"max_score", editor:"number", editorParams:{min:0, max:100, step:1,}, formatter: rowFormatter, headerSort:false,},
               {title:"Percentage", field: "percentage", formatter: rowGradeFormatter, headerSort:false,},
 			   {title: "Correctons", titleFormatter: statInfoHeaderFormatter, formatter: statInfoFormatter, width:40, align:"center", cellClick: async function(e, cell){
-				   
+                   
+                console.log(e);
+                console.log(cell);
 				   
 				   var per = prompt("What percent corrections do can you expect on this assignment?");
 				   if(per > 0 && per <= 100) {
@@ -252,9 +255,15 @@ let termsReset = {};
 				   var newScore = score + ptsBack;
 				   cell._cell.row.data.score.innerHTML = newScore;
 				   let rowPos = assignmentsTable.getRowPosition(cell._cell.row, true);
-				   var row = assignmentsTable.getRowFromPosition(rowPos, true); //return 6th row in the visible table data
+                   var row = assignmentsTable.getRowFromPosition(rowPos, true); //return 6th row in the visible table data
+                   console.log(rowPos);
+                   tableData.currentTermData.classes[selected_class_i].assignments[rowPos].score = newScore;
 				   row.update({"score":newScore}); //update the row data for field "name"
-				 //  table.updateRow(table.getRowPosition(cell._cell.row, true)); 
+                 //  table.updateRow(table.getRowPosition(cell._cell.row, true)); 
+                 // row.reformat();
+
+                    assignmentsTable.setData(tableData.currentTermData.classes[selected_class_i].assignments);
+
 				 assignmentsTable.redraw();
 				 categoriesTable.redraw();
 				 classesTable.redraw();
@@ -729,8 +738,7 @@ function responseCallbackPartial(response) {
 
       $("#classesTable").show();
 
-      classesTable.setData(response.classes); //set data of classes table to the tableData property of the response json object
-      classesTable.redraw();
+      classesTable.setData(response.classes); //set data of classes table to the tableData property of the response json object      classesTable.redraw();
 
       termsReset[currentTerm] = JSON.parse(JSON.stringify(tableData.terms[currentTerm]));
 
