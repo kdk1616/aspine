@@ -188,6 +188,20 @@ let statInfoFormatter = function(cell, formatterParams) {
   }
 }
 
+let correctionButtonFormatter = function(cell, formatterParams) {
+
+  if (!isNaN(cell.getRow().getData().score)) {
+    return "<i class=\"fas fa-book-open\"></i>";
+  }
+}
+
+/*let correctionButtonHeaderFormatter = function(cell, formatterParams) {
+
+  if (!isNaN(cell.getRow().getData().score)) {
+    return "<i class=\"fas fa-book-reader\"></i>";
+  }
+}*/
+
 let statInfoHeaderFormatter = function(value, data, cell, row, options) {
   return "<i class=\"fa fa-info-circle\"aria-hidden=\"true\"></i>";
 }

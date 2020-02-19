@@ -239,7 +239,7 @@ let termsReset = {};
               {title:"Score", field:"score", editor:"number", editorParams:{min:0, max:100, step:1,}, formatter: rowFormatter, headerSort:false,},
               {title:"Max Score", field:"max_score", editor:"number", editorParams:{min:0, max:100, step:1,}, formatter: rowFormatter, headerSort:false,},
               {title:"Percentage", field: "percentage", formatter: rowGradeFormatter, headerSort:false,},
-			   {title: "Correctons", titleFormatter: statInfoHeaderFormatter, formatter: statInfoFormatter, width:40, align:"center", cellClick: async function(e, cell){
+			   {title: "Correctons", titleFormatter: statInfoHeaderFormatter, formatter: correctionButtonFormatter, width:40, align:"center", cellClick: async function(e, cell){
                    
                 console.log(e);
                 console.log(cell);
@@ -264,9 +264,14 @@ let termsReset = {};
 
                     assignmentsTable.setData(tableData.currentTermData.classes[selected_class_i].assignments);
 
-				 assignmentsTable.redraw();
-				 categoriesTable.redraw();
-				 classesTable.redraw();
+				
+				editAssignment(tableData.currentTermData.classes[selected_class_i].assignments)
+				 
+				 
+
+   				 assignmentsTable.redraw();
+   				 categoriesTable.redraw();
+   				 classesTable.redraw();
 				 
 			   	  }
 				   
