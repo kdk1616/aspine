@@ -108,6 +108,15 @@ function update_lunch() {
     redraw_clock();
 }
 
+
+function updateClockLunch(lunch) {
+	
+	current_schedule = lunch;
+	console.log("here");
+}
+
+
+
 // Takes an object with "room" and "id"
 function get_schedule(p3room, p3id) {
     var floor = Math.floor(p3room / 1000);
@@ -167,6 +176,13 @@ function school_day() {
 }
 
 function redraw_clock() {
+
+	var lunch = lunchTime();
+	
+	if(lunch != 0) {//If correct lunch time can be isolated..
+	document.getElementById("lunch_range").value = lunch - 1;
+	
+	}
     // Fake call to get_period_name to set current_schedule
     get_period_name("Period 1");
     // UTC to EST
@@ -221,7 +237,7 @@ function redraw_clock() {
             number += 12 * 60 * 60 * 1000;
         }
     }
-
+	
     // conver 0-1 to 0-2pi
     pos = pos * 2 * Math.PI;
 
@@ -234,4 +250,43 @@ function redraw_clock() {
     drawName(period_name);
     drawHand(large_ctx, large_radius, pos, large_radius * .94, large_radius * .095);
     drawNumber(large_ctx, large_radius, pos, number);
+	
+	
 }
+
+
+
+
+function lunchTime() {
+		  var per3 = tableData.schedule.black[3];//right now only decides lunch based on black day...
+		  var floor = per3.room[0];
+		  var zone = per3.room[1];
+		  console.log("zone: " + zone + " floor: " + floor);
+		  let lunch = 0;
+		  
+		  
+	//-------LOGIC TO DECIDE LUNCH (THIS WILL NEED TO BE UPDATED)---------------	  
+		if ((zone < 6 && floor < 3) &&  (!per3.name.includes("Bio") && !per3.name.includes("Chem") && !per3.name.includes("Physics") && !per3.name.includes("Science"))) {
+			lunch = 1;
+			updateClockLunch("regular-a");//Update Clock;
+		}
+		if((zone < 6 && floor > 3) || zone == 6) {
+			lunch = 2;
+			updateClockLunch("regular-b");//Update Clock;
+			
+		}
+		if (zone < 6 && floor == 3 || per3.name.includes("Bio") || per3.name.includes("Chem") || per3.name.includes("Physics") || per3.name.includes("Science") || per3.name.includes("PE")) {//(Rindge 3rd floor, VPA in Arts Building (NOT ACCOUNTED FOR), Science, War Memorial == C
+			lunch = 3;
+			updateClockLunch("regular-c");//Update Clock;
+			
+		}
+		else {
+			lunch = 0;
+		}
+//---------END LUNCH LOGIC----------
+	
+		return lunch;
+	}
+
+
+

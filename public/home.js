@@ -762,27 +762,7 @@ function responseCallbackPartial(response) {
           //let periods = ["Period 1",  "CM/OTI", "Period 2", "Period 3", "Period 4"];
           let periods = tableData.schedule.black.slice().map(x => x.aspenPeriod.substring(x.aspenPeriod.indexOf("-") + 1));
 		  
-		  var per3 = tableData.schedule.black[3];//right now only decides lunch based on black day...
-		  var floor = per3.room[0];
-		  var zone = per3.room[1];
-		  console.log("zone: " + zone + " floor: " + floor);
-		  let lunch = 0;
-		  
-		  
-	//-------LOGIC TO DECIDE LUNCH (THIS WILL NEED TO BE UPDATED)---------------	  
-		if ((zone < 6 && floor < 3) &&  (!per3.name.includes("Bio") && !per3.name.includes("Chem") && !per3.name.includes("Physics") && !per3.name.includes("Science"))) {
-			lunch = 1;
-		}
-		if((zone < 6 && floor > 3) || zone == 6) {
-			lunch = 2;
-		}
-		if (zone < 6 && floor == 3 || per3.name.includes("Bio") || per3.name.includes("Chem") || per3.name.includes("Physics") || per3.name.includes("Science") || per3.name.includes("PE")) {//(Rindge 3rd floor, VPA in Arts Building (NOT ACCOUNTED FOR), Science, War Memorial == C
-			lunch = 3;
-		}
-		else {
-			lunch = 0;
-		}
-//---------END LUNCH LOGIC----------
+		  lunch = lunchTime();
 		  
 		  
 		  if (lunch == 1) {//Lunch A
